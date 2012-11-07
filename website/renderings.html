@@ -23,7 +23,8 @@
                     <!-- Place favicon.ico and apple-touch-icon.png in the root directory
                     -->
                     <link rel="stylesheet" href="css/bootstrap.min.css">
-                    <script src="js/vendor/modernizr-2.6.2.min.js">
+                    <link rel="stylesheet" href="css/jquery.dataTables.css">
+                    <script src="js/modernizr-2.6.2.min.js">
                                                             
                     </script>
                 </head>
@@ -43,7 +44,7 @@
                         </p>
                     <![endif]-->
                    
-                    <table id="renderingTable" class="tablesorter">
+                    <table id="myTable" class="tablesorter"> 
                         <thead>
                             <tr>
                                 <td>
@@ -58,6 +59,12 @@
                                 <td>
                                     Total Time
                                 </td>
+                                <td>
+                                    Cache Hit Ratio
+                                </td>
+                                <td>
+                                    Average Time
+                                </td>
                             </tr>
                         </thead>
                         <tbody>
@@ -66,7 +73,7 @@
                     </table>
 
                     <script>
-                                                            window.jQuery || document.write('<script src="js/vendor/jquery-1.8.2.min.js"><\/script>')
+                                                            window.jQuery || document.write('<script src="js/jquery-1.8.2.min.js"><\/script>')
                     </script>
                     <script src="js/renderings.js">
                                                             
@@ -80,7 +87,7 @@
                     <script src="js/bootstrap.min.js">
                                                             
                     </script>
-                    <script src="js/jquery.tablesorter.min.js">
+                    <script src="js/jquery.dataTables.min.js">
                                                             
                     </script>
                 </body>

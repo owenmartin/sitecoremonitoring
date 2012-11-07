@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	getRenderingData();
-	$("#renderingTable").tablesorter(); 
+
 });
 
 function getRenderingData() {
@@ -19,9 +19,15 @@ function getRenderingData() {
                             
                                     jQuery.each(json, function(i, item) {
                                         
-                                        $('#renderingTable tbody').append('<tr><td>'+item.TraceName+'</td><td>'+item.RenderCount+'</td><td>'+item.TotalItemsAccessed+'</td><td>'+item.TotalTime+'</td></tr>');
-                                     });
-                           
+                                        $('#myTable tbody').append('<tr><td>'+item.TraceName+
+											'</td><td>'+item.RenderCount+
+											'</td><td>'+item.TotalItemsAccessed+
+											'</td><td>'+item.TotalTime+
+											'</td><td>'+item.CacheHitRatio+
+											'</td><td>'+item.AverageTime+
+											'</td></tr>');
+										});
+									$("#myTable").dataTable(); 
                                 },
                                 error: function(xhr,textstatus,errorthrown) {
                                     alert("err" + errorthrown);
