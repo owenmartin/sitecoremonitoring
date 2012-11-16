@@ -27,19 +27,19 @@ $(document).ready(function() {
             useUTC: false
         }
     });
-     getCacheNames();
+     getCacheNames('http://gfixweb12.titantravel.co.uk/sitecore/cache.aspx');
      var c = localStorage["Caches"];
      if(c != undefined) {
          var caches = JSON.parse(c);
          $.each(caches.data, function(i, item) {
-            createGraph(item);
+            createGraph(item,'http://gfixweb12.titantravel.co.uk/sitecore/cache.aspx');
          });
      }
 });
 
 function getCacheNames(url) {
     $.ajax({
-        url: 'http://gfixweb12.travel.saga.co.uk/sitecore/cache.aspx',
+        url: url,
         dataType: 'json',
         type: 'GET',
         cache: false,
@@ -57,13 +57,13 @@ function getCacheNames(url) {
                 var name = link.text();
                 var c = localStorage["Caches"];
                 
-                if(c == undefined ) {
+                if(c === undefined ) {
                     c = JSON.stringify({'data':[]});
                 }
                 var caches = JSON.parse(c);
                 caches.data.push(name);
                 localStorage["Caches"] = JSON.stringify(caches);
-                createGraph(name);
+                createGraph(name,url);
             });
         },
         error: function(xhr,textstatus,errorthrown) {
@@ -72,14 +72,14 @@ function getCacheNames(url) {
     });
 }
 
-function createGraph(name) {
+function createGraph(name, url) {
     var divId = "graph_" + name;
     $('#graphContainer').append('<div id="' + divId + '"></div>');
-    generateGraph(divId,name);
+    generateGraph(divId,name,url);
 }
 
 
-function generateGraph(container, cacheName) {
+function generateGraph(container, cacheName,url) {
     var chart;
         // define the options
         var options = {
@@ -94,22 +94,16 @@ function generateGraph(container, cacheName) {
                         var c = this;
                         setInterval(function() {
                             $.ajax({
-                                url: "http://gfixweb12.travel.saga.co.uk/sitecore/cache.aspx",
+                                url: url,
                                 dataType: 'json',
                                 type: 'GET',
                                 cache: false,
                                 success: function (json) {
-                                        var lines = [],
-                                        listen = false,
-                                        date,
-                            
-                                        // set up the two data series
-                                        allVisits = [];
-                            
+                                    var allVisits = [];
                                     jQuery.each(json, function(i, item) {
-                                        
                                         if(item.Name == cacheName)
                                         {
+                                            
                                             series.addPoint([new Date().getTime(), item.CurrentSize],true,true);
                                             max.addPoint([new Date().getTime(), item.MaxSize],true,true);
                                         }
@@ -119,7 +113,7 @@ function generateGraph(container, cacheName) {
                                 error: function(xhr,textstatus,errorthrown) {
                                     alert("err" + errorthrown);
                                 }
-                            }); 
+                            });
                         }, 3000);
                     }
                 }
@@ -134,12 +128,6 @@ function generateGraph(container, cacheName) {
                         //return Highcharts.numberFormat(this.value, 0);
                     }
                 }
-            },
-         legend: {
-                enabled: false
-            },
-            exporting: {
-                enabled: false
             },
             yAxis: [{ // left y axis
                 title: {
@@ -234,21 +222,13 @@ function generateGraph(container, cacheName) {
         // to the options and initiate the chart.
         // This data is obtained by exporting a GA custom report to TSV.
         // http://api.jquery.com/jQuery.get/
-        var lines = [],
-                        listen = false,
-                        date,
-            
-                        // set up the two data series
-                        allVisits = [],
-                        maxSize = [];
+        var allVisits = [],maxSize = [];
         for(var i = 0; i < 20; i++) {
             $.ajax({
-                url: "http://gfixweb12.travel.saga.co.uk/sitecore/cache.aspx",
+                url: url,
                 dataType: 'json',
                 type: 'GET',
                 success: function (json) {
-                        
-            
                     jQuery.each(json, function(i, item) {
                         
                         if(item.Name == cacheName)
@@ -257,10 +237,9 @@ function generateGraph(container, cacheName) {
                             maxSize.push([new Date().getTime(), item.MaxSize]);
                         }
                      });
-            
                     options.series[0].data = allVisits;
                     options.series[1].data = maxSize;
-                chart = new Highcharts.Chart(options);
+                    chart = new Highcharts.Chart(options);
                     
                 },
                 error: function(xhr,textstatus,errorthrown) {
