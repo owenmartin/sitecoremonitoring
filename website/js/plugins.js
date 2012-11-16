@@ -27,15 +27,34 @@ $(document).ready(function() {
             useUTC: false
         }
     });
-     getCacheNames('http://gfixweb12.titantravel.co.uk/sitecore/cache.aspx');
-     var c = localStorage["Caches"];
+     loadSaved();
+
+     $('#btnUrl').click(function() {
+        var u = $('#cacheUrl').val();
+        localStorage["Url"] = u;
+        getCacheNames(u);
+        localStorage["Caches"] = undefined;
+     });
+      var u = $('#cacheUrl').val();
+     if(u != '' && u != undefined) {
+         getCacheNames(u);
+     }
+});
+
+function loadSaved() {
+     var url = localStorage["Url"];
+     if(url != undefined) {
+        $('#cacheUrl').val(url);
+     }
+    var c = localStorage["Caches"];
      if(c != undefined) {
          var caches = JSON.parse(c);
          $.each(caches.data, function(i, item) {
-            createGraph(item,'http://gfixweb12.titantravel.co.uk/sitecore/cache.aspx');
+            createGraph(item,$('#cacheUrl').val());
          });
      }
-});
+
+}
 
 function getCacheNames(url) {
     $.ajax({
@@ -57,7 +76,7 @@ function getCacheNames(url) {
                 var name = link.text();
                 var c = localStorage["Caches"];
                 
-                if(c === undefined ) {
+                if(c === undefined || c == 'undefined') {
                     c = JSON.stringify({'data':[]});
                 }
                 var caches = JSON.parse(c);
@@ -243,7 +262,7 @@ function generateGraph(container, cacheName,url) {
                     
                 },
                 error: function(xhr,textstatus,errorthrown) {
-                    alert("err" + errorthrown);
+                    
                 }
             });
         }
