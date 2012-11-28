@@ -8,7 +8,7 @@ $(document).ready(function() {
 
 function getRenderingData() {
 	$.ajax({
-                                url: "http://gfixweb12.titantravel.co.uk/sitecore/renderings.aspx",
+                                url: "http://hitours.titan.local/sitecore/renderings.aspx",
                                 dataType: 'json',
                                 type: 'GET',
                                 cache: false,
