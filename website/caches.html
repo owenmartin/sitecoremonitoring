@@ -23,7 +23,6 @@
                     <!-- Place favicon.ico and apple-touch-icon.png in the root directory
                     -->
                     <link rel="stylesheet" href="css/bootstrap.min.css">
-                    <link rel="stylesheet" href="css/jquery.dataTables.css">
                     <script src="js/modernizr-2.6.2.min.js">
                                                             
                     </script>
@@ -41,50 +40,27 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="span12">
+                        <div class="span8">
                             <form class="form-inline">
-                                <label><strong>Location of renderings.aspx file</strong><input type="text" placeholder="URL" id="renderingURL" size="50" style="width:auto" required="true" /></label>
+                                <label><strong>Location of cache.aspx file</strong><input type="text" placeholder="URL" id="cacheUrl" size="50" style="width:auto" required="true" /></label>
                                 <input type="button" class="btn btn-success" value="Load" id="btnUrl"/>
                             </form>
                         </div>
                     </div>
-                    <a href="#" id="refresh"><i class="icon-refresh"></i>Refresh</a>
-                    <table id="myTable" class="tablesorter"> 
-                        <thead>
-                            <tr>
-                                <td>
-                                    Rendering Name
-                                </td>
-                                <td>
-                                    Render Count
-                                </td>
-                                <td>
-                                    Times taken from Cache
-                                </td>
-                                <td>
-                                    Cache Hit Ratio
-                                </td>
-                                <td>
-                                    Total Items Accessed 
-                                </td>
-                                <td>
-                                    Total Time
-                                </td>
-                                <td>
-                                    Average Time
-                                </td>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table>
-
+                    <div class="row">
+                        <div class="span3">
+                            <ul id="cacheNames" class="nav nav-tabs nav-stacked">
+                            </ul>
+                        </div>
+                        <div class="span15">
+                            <div id="graphContainer" class=>
+                            </div>
+                        </div>
+                    </div>
                     <script>
-                        window.jQuery || document.write('<script src="js/jquery-1.8.2.min.js"><\/script>')
+                                                            window.jQuery || document.write('<script src="js/jquery-1.8.2.min.js"><\/script>')
                     </script>
-                    <script src="js/renderings.js">
+                    <script src="js/plugins.js">
                                                             
                     </script>
                     <script src="js/main.js">
@@ -94,9 +70,6 @@
                                                             
                     </script>
                     <script src="js/bootstrap.min.js">
-                                                            
-                    </script>
-                    <script src="js/jquery.dataTables.min.js">
                                                             
                     </script>
                 </body>
