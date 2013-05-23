@@ -13,22 +13,18 @@ $(document).ready(function() {
         localStorage["Caches"] = undefined;
      });
       var u = $('#cacheUrl').val();
-     if(u != '' && u != undefined) {
+     if(u !== '' && u !== undefined) {
          getCacheNames(u);
      }
 });
 
-
-
-
-
 function loadSaved() {
      var url = localStorage["Url"];
-     if(url != undefined) {
+     if(url !== undefined) {
         $('#cacheUrl').val(url);
      }
     var c = localStorage["Caches"];
-     if(c != undefined) {
+     if(c !== undefined && c != "undefined") {
          var caches = JSON.parse(c);
          $.each(caches.data, function(i, item) {
             createGraph(item,$('#cacheUrl').val());
@@ -47,8 +43,15 @@ function getCacheNames(url) {
             var names = [];
 
             jQuery.each(json, function(i, item) {
-                names.push([item.Name]);
+                names.push(item.Name);
              });
+            names.sort(
+              function(a, b) {
+                if (a.toLowerCase() < b.toLowerCase()) return -1;
+                if (a.toLowerCase() > b.toLowerCase()) return 1;
+                return 0;
+              }
+            );
             jQuery.each(names, function(i, name) {
                 $('#cacheNames').append('<li><a href="#" class="cacheName">' + name + '</a></li>');
             });
