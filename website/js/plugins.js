@@ -33,6 +33,22 @@ function loadSaved() {
 
 }
 
+function removeCache(name) {
+    var c = localStorage["Caches"];
+     if(c !== undefined && c != "undefined") {
+         var caches = JSON.parse(c);
+         var temp = [];
+         $.each(caches.data, function(i, item) {
+            if(item != name) {
+                temp.push(item);
+            }
+         });
+         caches.data = temp;
+         localStorage["Caches"] = JSON.stringify(caches);
+         loadSaved();
+     }
+}
+
 function getCacheNames(url) {
     $.ajax({
         url: url,
@@ -74,7 +90,8 @@ function getCacheNames(url) {
 
 function createGraph(name, url) {
     var divId = "graph_" + name;
-    $('#graphContainer').append('<div id="' + divId + '"></div>');
+    $('#graphContainer').append('<a href="javascript:void(0);" onclick="removeCache(\''+name+'\')">Remove Graph</a><div id="' + divId + '"></div>');
+        // $('#graphContainer').append('<div id="' + divId + '"></div>');
     generateGraph(divId,name,url);
 }
 
@@ -87,6 +104,7 @@ function generateGraph(container, cacheName,url) {
                 renderTo: container,
                 type: 'spline',
                 marginRight: 10,
+                width:1000,
                 events: {
                     load: function() {
                         var series = this.series[0];
