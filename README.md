@@ -12,4 +12,6 @@ There are two parts to the dashboard - a selection of html/css/js files for the 
 * Show alerts when cache levels drop in quick succession (useful for cache tuning)
 * Create page to view Event Queue data
 * Create page to view database statistics
+* Create ability to have site profiles 
+* Add cache statistic information (total allocated, total used)
 * Many more..
