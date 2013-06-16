@@ -13,6 +13,7 @@ $(document).ready(function() {
     }
 });
 
+
 function loadSaved() {
     var url = localStorage["Url"];
     if (url !== undefined) {
@@ -92,6 +93,7 @@ function createGraph(name, url) {
     generateGraph(divId, name, url);
 }
 
+var caches = [];
 
 function generateGraph(container, cacheName, url) {
     var dps = []; // dataPoints
@@ -104,7 +106,7 @@ function generateGraph(container, cacheName, url) {
             type: "line",
             dataPoints: dps
         }, {
-            type:"line",
+            type: "line",
             dataPoints: maxCache
         }],
         axisX: {
@@ -120,31 +122,41 @@ function generateGraph(container, cacheName, url) {
         }
     });
 
-    var updateChart = function(count) {
-        count = count || 1;
+    caches.push({
+        currentSize: dps,
+        maxSize: maxCache,
+        cacheName: cacheName,
+        chart: chart
+    });
+
+    var updateChart = function() {
         $.ajax({
             url: url,
             dataType: 'json',
             type: 'GET',
             success: function(json) {
                 jQuery.each(json, function(i, item) {
-                    if (item.Name == cacheName) {
-                        dps.push({
-                            x: new Date(),
-                            y: item.CurrentSize
-                        });
-                        maxCache.push({
-                            x: new Date(),
-                            y: item.MaxSize
-                        });
-                        if (dps.length > 30) {
-                            dps.shift();
-                            maxCache.shift();
+                    jQuery.each(caches, function(cacheIndex, cache) {
+                        if (item.Name == cache.cacheName) {
+                            cache.currentSize.push({
+                                x: new Date(),
+                                y: item.CurrentSize
+                            });
+                            cache.maxSize.push({
+                                x: new Date(),
+                                y: item.MaxSize
+                            });
+                            if (cache.currentSize.length > 30) {
+                                cache.currentSize.shift();
+                                maxSize.shift();
+                            }
                         }
+                    });
 
-                    }
                 });
-                chart.render();
+                jQuery.each(caches, function(cacheIndex, cache) {
+                    cache.chart.render();
+                });
             },
             error: function(xhr, textstatus, errorthrown) {
 
