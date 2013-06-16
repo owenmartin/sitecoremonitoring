@@ -1,52 +1,47 @@
 $(document).ready(function() {
-     Highcharts.setOptions({
-        global: {
-            useUTC: false
-        }
-    });
-     loadSaved();
+    loadSaved();
 
-     $('#btnUrl').click(function() {
+    $('#btnUrl').click(function() {
         var u = $('#cacheUrl').val();
         localStorage["Url"] = u;
         getCacheNames(u);
         localStorage["Caches"] = undefined;
-     });
-      var u = $('#cacheUrl').val();
-     if(u !== '' && u !== undefined) {
-         getCacheNames(u);
-     }
+    });
+    var u = $('#cacheUrl').val();
+    if (u !== '' && u !== undefined) {
+        getCacheNames(u);
+    }
 });
 
 function loadSaved() {
-     var url = localStorage["Url"];
-     if(url !== undefined) {
+    var url = localStorage["Url"];
+    if (url !== undefined) {
         $('#cacheUrl').val(url);
-     }
+    }
     var c = localStorage["Caches"];
-     if(c !== undefined && c != "undefined") {
-         var caches = JSON.parse(c);
-         $.each(caches.data, function(i, item) {
-            createGraph(item,$('#cacheUrl').val());
-         });
-     }
+    if (c !== undefined && c != "undefined") {
+        var caches = JSON.parse(c);
+        $.each(caches.data, function(i, item) {
+            createGraph(item, $('#cacheUrl').val());
+        });
+    }
 
 }
 
 function removeCache(name) {
     var c = localStorage["Caches"];
-     if(c !== undefined && c != "undefined") {
-         var caches = JSON.parse(c);
-         var temp = [];
-         $.each(caches.data, function(i, item) {
-            if(item != name) {
+    if (c !== undefined && c != "undefined") {
+        var caches = JSON.parse(c);
+        var temp = [];
+        $.each(caches.data, function(i, item) {
+            if (item != name) {
                 temp.push(item);
             }
-         });
-         caches.data = temp;
-         localStorage["Caches"] = JSON.stringify(caches);
-         loadSaved();
-     }
+        });
+        caches.data = temp;
+        localStorage["Caches"] = JSON.stringify(caches);
+        loadSaved();
+    }
 }
 
 function getCacheNames(url) {
@@ -55,34 +50,36 @@ function getCacheNames(url) {
         dataType: 'json',
         type: 'GET',
         cache: false,
-        success: function (json) {
+        success: function(json) {
             var names = [];
 
             jQuery.each(json, function(i, item) {
                 names.push(item.Name);
-             });
+            });
             names.sort(
-              function(a, b) {
+
+            function(a, b) {
                 if (a.toLowerCase() < b.toLowerCase()) return -1;
                 if (a.toLowerCase() > b.toLowerCase()) return 1;
                 return 0;
-              }
-            );
+            });
             jQuery.each(names, function(i, name) {
                 $('#cacheNames').append('<li><a href="#" class="cacheName">' + name + '</a></li>');
             });
-            $('.cacheName').click(function (event) {
+            $('.cacheName').click(function(event) {
                 var link = $(this);
                 var name = link.text();
                 var c = localStorage["Caches"];
-                
-                if(c === undefined || c == 'undefined') {
-                    c = JSON.stringify({'data':[]});
+
+                if (c === undefined || c == 'undefined') {
+                    c = JSON.stringify({
+                        'data': []
+                    });
                 }
                 var caches = JSON.parse(c);
                 caches.data.push(name);
                 localStorage["Caches"] = JSON.stringify(caches);
-                createGraph(name,url);
+                createGraph(name, url);
             });
         }
     });
@@ -90,179 +87,71 @@ function getCacheNames(url) {
 
 function createGraph(name, url) {
     var divId = "graph_" + name;
-    $('#graphContainer').append('<a href="javascript:void(0);" onclick="removeCache(\''+name+'\')">Remove Graph</a><div id="' + divId + '"></div>');
-        // $('#graphContainer').append('<div id="' + divId + '"></div>');
-    generateGraph(divId,name,url);
+    $('#graphContainer').append('<a href="javascript:void(0);" onclick="removeCache(\'' + name + '\')">Remove Graph</a><div id="' + divId + '" style="height: 300px; width:100%;"></div>');
+    // $('#graphContainer').append('<div id="' + divId + '"></div>');
+    generateGraph(divId, name, url);
 }
 
 
-function generateGraph(container, cacheName,url) {
-    var chart;
-        // define the options
-        var options = {
-            chart: {
-                renderTo: container,
-                type: 'spline',
-                marginRight: 10,
-                width:1000,
-                events: {
-                    load: function() {
-                        var series = this.series[0];
-                        var max = this.series[1];
-                        var c = this;
-                        setInterval(function() {
-                            $.ajax({
-                                url: url,
-                                dataType: 'json',
-                                type: 'GET',
-                                cache: false,
-                                success: function (json) {
-                                    var allVisits = [];
-                                    jQuery.each(json, function(i, item) {
-                                        if(item.Name == cacheName)
-                                        {
-                                            
-                                            series.addPoint([new Date().getTime(), item.CurrentSize],true,true);
-                                            max.addPoint([new Date().getTime(), item.MaxSize],true,true);
-                                        }
-                                     });
-                           
-                                },
-                                error: function(xhr,textstatus,errorthrown) {
-                                    alert("err" + errorthrown);
-                                }
-                            });
-                        }, 3000);
-                    }
-                }
-            },
-            title: {
-                text: 'Cache Size ' + cacheName
-            },
-            xAxis: {
-            labels: {
-                formatter: function() {
-                    return Highcharts.dateFormat('%H:%M:%S', this.value);
-                        //return Highcharts.numberFormat(this.value, 0);
-                    }
-                }
-            },
-            yAxis: [{ // left y axis
-                title: {
-                    text: null
-                },
-                labels: {
-                    align: 'left',
-                    x: 3,
-                    y: 16,
-                    formatter: function() {
-                        return Highcharts.numberFormat(this.value, 0);
-                    }
-                },
-                showFirstLabel: false
-            },
-            { // right y axis
-                
-                gridLineWidth: 0,
-                opposite: true,
-                title: {
-                    text: null
-                },
-                labels: {
-                    align: 'right',
-                    x: -3,
-                    y: 16,
-                    formatter: function() {
-                        return Highcharts.numberFormat(this.value, 0);
-                    }
-                },
-                showFirstLabel: false
-            }],
-            legend: {
-                align: 'left',
-                verticalAlign: 'top',
-                y: 20,
-                floating: true,
-                borderWidth: 0
-            },
-    
-            tooltip: {
-                shared: true,
-                crosshairs: true
-            },
-    
-            plotOptions: {
-                series: {
-                    cursor: 'pointer',
-                    point: {
-                        events: {
-                            click: function() {
-                                hs.htmlExpand(null, {
-                                    pageOrigin: {
-                                        x: this.pageX,
-                                        y: this.pageY
-                                    },
-                                    headingText: this.series.name,
-                                    maincontentText: Highcharts.dateFormat('%H:%M:%S', this.x) +':<br/> '+
-                                        this.y +' visits',
-                                    width: 200
-                                });
-                            }
-                        }
-                    },
-                    marker: {
-                        lineWidth: 1
-                    }
-                }
-            },
-    
-            series: [{
-                name: 'Current Size  '+ cacheName,
-                lineWidth: 4,
-                data: [],
-                marker: {
-                    radius: 4
-                }
+function generateGraph(container, cacheName, url) {
+    var dps = []; // dataPoints
+    var maxCache = [];
+    var chart = new CanvasJS.Chart(container, {
+        title: {
+            text: cacheName
+        },
+        data: [{
+            type: "line",
+            dataPoints: dps
+        }, {
+            type:"line",
+            dataPoints: maxCache
+        }],
+        axisX: {
+            title: "time",
+            gridThickness: 1,
+            valueFormatString: "hh:mm:ss TT",
+            labelAngle: -20
 
-            },{
-                name: 'Max Size  '+ cacheName,
-                lineWidth: 4,
-                data: [],
-                marker: {
-                    radius: 4
-                }
-
-            }]
-        };
-    
-
-        // Load data asynchronously using jQuery. On success, add the data
-        // to the options and initiate the chart.
-        // This data is obtained by exporting a GA custom report to TSV.
-        // http://api.jquery.com/jQuery.get/
-        var allVisits = [],maxSize = [];
-        for(var i = 0; i < 20; i++) {
-            $.ajax({
-                url: url,
-                dataType: 'json',
-                type: 'GET',
-                success: function (json) {
-                    jQuery.each(json, function(i, item) {
-                        
-                        if(item.Name == cacheName)
-                        {
-                            allVisits.push([new Date().getTime(), item.CurrentSize]);
-                            maxSize.push([new Date().getTime(), item.MaxSize]);
-                        }
-                     });
-                    options.series[0].data = allVisits;
-                    options.series[1].data = maxSize;
-                    chart = new Highcharts.Chart(options);
-                    
-                },
-                error: function(xhr,textstatus,errorthrown) {
-                    
-                }
-            });
+        },
+        axisY: {
+            title: "Cache size",
+            gridThickness: 1
         }
+    });
+
+    var updateChart = function(count) {
+        count = count || 1;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            type: 'GET',
+            success: function(json) {
+                jQuery.each(json, function(i, item) {
+                    if (item.Name == cacheName) {
+                        dps.push({
+                            x: new Date(),
+                            y: item.CurrentSize
+                        });
+                        maxCache.push({
+                            x: new Date(),
+                            y: item.MaxSize
+                        });
+                        if (dps.length > 30) {
+                            dps.shift();
+                            maxCache.shift();
+                        }
+
+                    }
+                });
+                chart.render();
+            },
+            error: function(xhr, textstatus, errorthrown) {
+
+            }
+        });
+    };
+    setInterval(function() {
+        updateChart();
+    }, 5000);
 }
